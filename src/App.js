@@ -1,24 +1,49 @@
-import logo from './logo.svg';
+import React, {createContext, useEffect, useState} from 'react'
 import './App.css';
-
+import { initUser } from './components/values';
+import Login from './components/Login';
+import 'bootstrap/dist/css/bootstrap.min.css';
+export const MainContext = createContext()
+import axios from 'axios'
 function App() {
+  const [user, setUser] = useState(initUser)
+  const [loc, setLoc] = useState([])
+  
+  function loginUser(user) {
+    setUser({
+      username: user.username,
+      token: user.token,
+      name: user.name,
+      role_id: user.role_id
+    })
+  }
+  
+
+
+
+  useEffect(() => {
+    const getLoc = () => {
+      axios.get('http://localhost:9000/locations')
+      .then(res => {
+        console.log(res.data)
+      })
+      .catch(err => console.log(err))
+    }
+
+
+  }, [])
+
   return (
+    <MainContext.Provider
+    value={{
+      loginUser: loginUser
+    }}
+    >
+
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {user.token === '' ? <Login /> : undefined}
     </div>
+    </MainContext.Provider>
   );
 }
 
